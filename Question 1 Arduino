@@ -1,38 +1,59 @@
-#include <Servo.h>
+#include “DHT.h”
 
-Servo servoX; 
-Servo servoY; 
-int posX, posY;
-char incomingByte;
-String incomingData;
+ 
 
-void setup() {
+#define DHTPIN 2     
+
+#define DHTTYPE DHT22   
+
+ 
+
+DHT dht(DHTPIN, DHTTYPE);
+
+ 
+
+Void setup() {
+
   Serial.begin(9600);
-  servoX.attach(9); 
-  servoY.attach(10); 
-  servoX.write(90); 
-  servoY.write(90);
+
+  Dht.begin();
+
 }
 
-void loop() {
-  
-  if (Serial.available() > 0) {
-    
-    incomingByte = Serial.read();
-    
-    if (incomingByte == '\n') {
-      
-      int commaIndex = incomingData.indexOf(',');
-      posX = incomingData.substring(0, commaIndex).toInt();
-      posY = incomingData.substring(commaIndex + 1).toInt();
-      servoX.write(map(posX, 0, 640, 0, 180)); 
-      servoY.write(map(posY, 0, 480, 0, 180)); 
-      
-      incomingData = "";
-    } else {
-      
-      incomingData += incomingByte;
-    }
+ 
+
+Void loop() {
+
+  Delay(2000);
+
+ 
+
+  Float h = dht.readHumidity();
+
+  Float t = dht.readTemperature();
+
+ 
+
+  If (isnan(h) || isnan(t)) {
+
+    Serial.println(“Failed to read DHT22 sensor”);
+
+    Return;
+
   }
-}
 
+ 
+
+  Serial.print(“humidity: “);
+
+  Serial.print(h);
+
+  Serial.print(“ %\t”);
+
+  Serial.print(“temperature: “);
+
+  Serial.print(t);
+
+  Serial.println(“ *C”);
+
+}
